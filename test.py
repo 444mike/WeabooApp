@@ -4,7 +4,7 @@ from pandas import json_normalize
 import requests
 
 variables = {
-  'username': '444mike',
+  'username': 'HidekiGQ',
   'type': 'ANIME'
 }
 
@@ -43,3 +43,4 @@ response = requests.post(url, json={'query': query, 'variables': variables})
 jsonData = response.json()
 completed_entries = jsonData['data']['MediaListCollection']['lists'][0]['entries']
 michael_df = json_normalize(completed_entries)
+print(michael_df)
