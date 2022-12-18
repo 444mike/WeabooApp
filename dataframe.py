@@ -45,4 +45,5 @@ jsonData = response.json()
 # slams the shit into a dictionary based on type (0 = completed, 1 = planning, etc.)
 completed_entries = jsonData['data']['MediaListCollection']['lists'][1]['entries']
 michael_df = json_normalize(completed_entries)
-new_df = michael_df.sort_values("media.episodes")
+print(michael_df)
+'L bozo cringe'
