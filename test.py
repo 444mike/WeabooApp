@@ -44,3 +44,4 @@ jsonData = response.json()
 completed_entries = jsonData['data']['MediaListCollection']['lists'][0]['entries']
 michael_df = json_normalize(completed_entries)
 print(michael_df)
+'L bozo cringe'
