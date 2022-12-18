@@ -27,7 +27,7 @@ MediaListCollection(userName: $username, type: $type) {
         volumes
         idMal
         episodes
-        title { romaji }
+        title { english }
         }
     }
     name

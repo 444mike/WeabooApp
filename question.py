@@ -14,7 +14,7 @@ def question(username, options):
 
         randomNumber = random.randint(0, df_rows) # generate a random int based on number of rows in dataframe
         show = df.iloc[randomNumber] # get a show's row based on random number generated
-        title = show.get('media.title.romaji') # get title of said show
+        title = show.get('media.title.english') # get title of said show
         score = show.get('score') # get score of said show
         if score not in shows.values():
             shows[title] = score # adds a key of title and a value of score to the dictionary of shows
@@ -80,7 +80,7 @@ MediaListCollection(userName: $username, type: $type) {
         volumes
         idMal
         episodes
-        title { romaji }
+        title { english }
         }
     }
     name
