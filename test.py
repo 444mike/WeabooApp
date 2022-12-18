@@ -18,7 +18,7 @@ MediaListCollection(userName: $username, type: $type) {
     entries {
         id
         status
-        score(format: POINT_10)
+        score(format: POINT_10_DECIMAL)
         progress
         notes
         repeat
@@ -39,8 +39,10 @@ MediaListCollection(userName: $username, type: $type) {
 }
 '''
 
+# posts a request to the anilist graph ql
 response = requests.post(url, json={'query': query, 'variables': variables})
 jsonData = response.json()
-completed_entries = jsonData['data']['MediaListCollection']['lists'][0]['entries']
+completed_entries = jsonData['data']['MediaListCollection']['lists'][1]['entries']
 michael_df = json_normalize(completed_entries)
-print(michael_df)
+new_df = michael_df.sort_values("media.episodes")
+print(new_df)
