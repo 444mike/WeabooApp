@@ -1,6 +1,6 @@
 def produce_completed_df(username):
     """
-    Returns a DataFrame of the user's completed shows.
+    Returns a DataFrame of the user's scored completed shows.
     ---
     Parameters:
     username: the username of the desired profile (str)
@@ -52,8 +52,9 @@ MediaListCollection(userName: $username, type: $type) {
     # slams the shit into a dictionary based on type (0 = completed, 1 = planning, etc.)
     completed_entries = jsonData['data']['MediaListCollection']['lists'][0]['entries']
     df = json_normalize(completed_entries)
+    scored_only = df[df.get('score') > 0]
 
-    return df
+    return scored_only
 
 
 
