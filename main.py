@@ -1,4 +1,4 @@
-from question import *
+from functions import *
 
 score = 0
 print("working")
