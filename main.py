@@ -1,18 +1,17 @@
 from functions import *
 
-score = 0
-print("working")
+pick_game_prompt = """
+Which game do you want to play?
 
-username = input("Which user do you want to quiz on? ")
-user_df = produce_completed_df(username)
-num_questions = int(input("How many questions do you want? "))
-num_options = int(input("How many options do you want? "))
+1: Guess the user rating!
 
-for i in range(num_questions):
-    print("")
-    if question(username, user_df, num_options) == True:
-        score += 1
-        
-print(f'you got {score} out of {num_questions} correct')
+"""
+pick_game_response = input(pick_game_prompt)
+print('') # whitespace looks so much nicer but code looks so dumb ;-;
 
-
+if pick_game_response == '1':
+    guess_user_rating()
+elif pick_game_response == '2':
+    print("We don't have another game yet 4head -.-")
+else:
+    print("Invalid response.")
