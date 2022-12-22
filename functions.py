@@ -100,9 +100,9 @@ MediaListCollection(userName: $username, type: $type) {
 
     # checks if username is valid
     if username == '':
-        return "Could not execute, username field left blank."
+        raise NameError("Could not execute, username field left blank.")
     elif ('errors' in jsonData):
-        return 'Entered username may be invalid, or Anilist might be down.'
+        raise NameError('Entered username may be invalid, or Anilist might be down.')
 
     # slams the shit into a dictionary based on type (0 = completed, 1 = planning, etc.)
     completed_entries = jsonData['data']['MediaListCollection']['lists'][0]['entries']
