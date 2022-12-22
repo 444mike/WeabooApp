@@ -2,18 +2,17 @@ import random
 import numpy
 import pandas
 
-def question(username, options):
-    df = produce_completed_df(username)
+def question(username, user_df, options):
 
     shows = {} # dictionary of shows
     num_options = options # however many options you want
 
-    df_rows = df.shape[0] # gets all the rows
+    df_rows = user_df.shape[0] # gets all the rows
 
     while len(shows) < num_options: # while we have less shows than what the question requires
 
         randomNumber = random.randint(0, df_rows - 1) # generate a random int based on number of rows in dataframe
-        show = df.iloc[randomNumber] # get a show's row based on random number generated
+        show = user_df.iloc[randomNumber] # get a show's row based on random number generated
         title = show.get('media.title.english') # get title of said show
         score = show.get('score') # get score of said show
         if score not in shows.values():
@@ -98,15 +97,16 @@ MediaListCollection(userName: $username, type: $type) {
     # posts a request to the anilist graph ql
     response = requests.post(url, json={'query': query, 'variables': variables})
     jsonData = response.json()
+
+    # checks if username is valid
+    if username == '':
+        return "Could not execute, username field left blank."
+    elif ('errors' in jsonData):
+        return 'Entered username may be invalid, or Anilist might be down.'
+
     # slams the shit into a dictionary based on type (0 = completed, 1 = planning, etc.)
     completed_entries = jsonData['data']['MediaListCollection']['lists'][0]['entries']
     df = json_normalize(completed_entries)
     scored_only = df[df.get('score') > 0]
 
     return scored_only
-
-
-
-
-
-
