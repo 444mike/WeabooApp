@@ -3,7 +3,7 @@ import numpy as np
 import pandas
 import requests
 
-def character_guess(filtered_df, num_options, favorites_threshold = 3):
+def character_guess(filtered_df, num_options, favorites_threshold = 2):
     """
     Outputs a question in which the user determines which listed character 
     belongs to a randomly selected show.
@@ -31,31 +31,43 @@ def character_guess(filtered_df, num_options, favorites_threshold = 3):
     characters = []
     for show in shows:
         # GraphQL query to pull each character
-        query = """
-query Query($idMal: Int, $sort: [CharacterSort]) {
-  Media(idMal: $idMal) {
+        query= """
+query Query($sort: [CharacterSort], $search: String) {
+  Media(search: $search) {
     characters(sort: $sort) {
-      edges {
-        node {
-          name {
-            full
-          }
+      nodes {
+        name {
+          full
         }
       }
     }
   }
 }
 """
-        variables = {"idMal": show['idMal'], "sort": "FAVOURITES_DESC"}
+        variables = {"search": show["romaji title"], "sort": "FAVOURITES_DESC"}
         url = 'https://graphql.anilist.co'
 
         response = requests.post(url, json={'query': query, 'variables': variables})
+        print()
+
+
         jsonData = response.json()
 
         # strips json file to only character nodes
         character_list = jsonData['data']['Media']['characters']['nodes']
         
         show_characters = []
+        if len(character_list) == 0:
+            variables = {"search": show["english title"], "sort": "FAVOURITES_DESC"}
+            response = requests.post(url, json={'query': query, 'variables': variables})
+
+            jsonData = response.json()
+
+            # strips json file to only character nodes
+            character_list = jsonData['data']['Media']['characters']['nodes']
+
+        print()
+        print(variables["search"], show["romaji title"], character_list)
         for i in range(favorites_threshold):
             show_characters.append(character_list[i]['name']['full'])
         
@@ -66,7 +78,7 @@ query Query($idMal: Int, $sort: [CharacterSort]) {
     selected_show_index = np.random.randint(num_options)
     selected_show = shows[selected_show_index]
 
-    prompt = f"Which of these {num_options} characters is from {selected_show['title']}?\n"
+    prompt = f"Which of these {num_options} characters is from {selected_show['english title']}?\n"
     option_number = 1
 
     for character in characters:
@@ -84,6 +96,28 @@ query Query($idMal: Int, $sort: [CharacterSort]) {
         print("Correct answer:", characters[selected_show_index])
         return False
 
+
+def character_guess_game(): # which database, number options
+    username = input("Which user do you want to quiz on? ")
+    user_df = produce_completed_df(username)
+    stripped_user_df = user_df.get(["media.idMal", "media.title.english", "media.title.romaji"]).rename\
+    (columns = {"media.idMal": "idMal", "media.title.english": "english title", "media.title.romaji": "romaji title"})
+
+    character_guess(stripped_user_df, 3)
+    """
+    score = 0
+
+    
+    user_df = produce_completed_df(username) # takes df only once for efficiency
+    num_questions = int(input("How many questions do you want? "))
+    num_options = int(input("How many options do you want? "))
+
+    for i in range(num_questions):
+        print("")
+        if guess_user_rating(username, user_df, num_options) == True:
+            score += 1
+    
+    print(f'you got {score} out of {num_questions} correct')"""
 
 
 def guess_user_rating_game():
@@ -183,7 +217,7 @@ MediaListCollection(userName: $username, type: $type) {
         volumes
         idMal
         episodes
-        title { english }
+        title { english romaji }
         }
     }
     name
