@@ -10,7 +10,7 @@ pick_game_response = input(pick_game_prompt)
 print('') # whitespace looks so much nicer but code looks so dumb ;-;
 
 if pick_game_response == '1':
-    guess_user_rating()
+    guess_user_rating_game()
 elif pick_game_response == '2':
     print("We don't have another game yet 4head -.-")
 else:

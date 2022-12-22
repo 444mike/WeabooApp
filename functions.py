@@ -1,25 +1,109 @@
 import random
-import numpy
+import numpy as np
 import pandas
+import requests
 
-def guess_user_rating():
+def character_guess(filtered_df, num_options, favorites_threshold = 3):
+    """
+    Outputs a question in which the user determines which listed character 
+    belongs to a randomly selected show.
+    ---
+    Parameters:
+    filtered_df: a DataFrame with two columns, those being 'idMal' (integer ids 
+    corresponding to MAL listings) and 'title' (titles of each show, in english, 
+    as strings)
+    num_options: the number of answer choices to be provided (int)
+    favorites_threshold: the maximum distance a selected character can be from 
+    the top of a show's favorites list, defaulted to three (i.e. only the top 
+    three most-favorited characters from each show may be selected)
+    """
+    # pulls [num_options] amount of randomly selected shows
+    df_rows = filtered_df.shape[0]
+    random_indices = np.random.randint(df_rows, size = num_options)
+
+    shows = []
+    for index in random_indices:
+        show = dict(filtered_df.iloc[index]) # converts selected row to dictionary
+        shows.append(show)
+
+    
+    # pulls a highly-favorited character from each show as an answer option
+    characters = []
+    for show in shows:
+        # GraphQL query to pull each character
+        query = """
+query Query($idMal: Int, $sort: [CharacterSort]) {
+  Media(idMal: $idMal) {
+    characters(sort: $sort) {
+      edges {
+        node {
+          name {
+            full
+          }
+        }
+      }
+    }
+  }
+}
+"""
+        variables = {"idMal": show['idMal'], "sort": "FAVOURITES_DESC"}
+        url = 'https://graphql.anilist.co'
+
+        response = requests.post(url, json={'query': query, 'variables': variables})
+        jsonData = response.json()
+
+        # strips json file to only character nodes
+        character_list = jsonData['data']['Media']['characters']['nodes']
+        
+        show_characters = []
+        for i in range(favorites_threshold):
+            show_characters.append(character_list[i]['name']['full'])
+        
+        selected_character = show_characters[np.random.randint(favorites_threshold)]
+        characters.append(selected_character)
+
+    # selects a random show as the correct answer
+    selected_show_index = np.random.randint(num_options)
+    selected_show = shows[selected_show_index]
+
+    prompt = f"Which of these {num_options} characters is from {selected_show['title']}?\n"
+    option_number = 1
+
+    for character in characters:
+        prompt += f"{option_number}: {character}\n"
+        option_number += 1
+    prompt += '\n'
+
+    response = int(input(prompt))
+
+    if response == selected_show_index + 1:
+        print("pog")
+        return True
+    else:
+        print("pepesadge")
+        print("Correct answer:", characters[selected_show_index])
+        return False
+
+
+
+def guess_user_rating_game():
     score = 0
 
     username = input("Which user do you want to quiz on? ")
-    user_df = produce_completed_df(username)
+    user_df = produce_completed_df(username) # takes df only once for efficiency
     num_questions = int(input("How many questions do you want? "))
     num_options = int(input("How many options do you want? "))
 
     for i in range(num_questions):
         print("")
-        if question(username, user_df, num_options) == True:
+        if guess_user_rating(username, user_df, num_options) == True:
             score += 1
     
     print(f'you got {score} out of {num_questions} correct')
         
-        
 
-def question(username, user_df, options):
+
+def guess_user_rating(username, user_df, options):
 
     shows = {} # dictionary of shows
     num_options = options # however many options you want
@@ -54,10 +138,10 @@ def question(username, user_df, options):
     print()
 
     if response == answer:
-        print("naisuuuuuu")
+        print("pog")
         return True
     else:
-        print("reatard")
+        print("pepesadge")
         print("Highest scored show:", highest_rated)
         return False
 
@@ -111,7 +195,7 @@ MediaListCollection(userName: $username, type: $type) {
 }
 '''
 
-    # posts a request to the anilist graph ql
+    # posts a request to the Anilist GraphQL
     response = requests.post(url, json={'query': query, 'variables': variables})
     jsonData = response.json()
 
