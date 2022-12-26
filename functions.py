@@ -3,6 +3,7 @@ import numpy as np
 import pandas
 import requests
 
+# Function for the character guessing mechanics
 def character_guess(filtered_df, num_options, favorites_threshold = 2):
     """
     Outputs a question in which the user determines which listed character 
@@ -67,7 +68,7 @@ query Query($sort: [CharacterSort], $search: String) {
             character_list = jsonData['data']['Media']['characters']['nodes']
 
         print()
-        print(variables["search"], show["romaji title"], character_list)
+        print(show["romaji title"], character_list, '\n"')
         for i in range(favorites_threshold):
             show_characters.append(character_list[i]['name']['full'])
         
@@ -86,7 +87,7 @@ query Query($sort: [CharacterSort], $search: String) {
         option_number += 1
     prompt += '\n'
 
-    response = int(input(prompt))
+    response = 1 # int(input(prompt))
 
     if response == selected_show_index + 1:
         print("pog")
@@ -96,45 +97,61 @@ query Query($sort: [CharacterSort], $search: String) {
         print("Correct answer:", characters[selected_show_index])
         return False
 
-
+# Function for the character guessing game
 def character_guess_game(): # which database, number options
     username = input("Which user do you want to quiz on? ")
     user_df = produce_completed_df(username)
-    stripped_user_df = user_df.get(["media.idMal", "media.title.english", "media.title.romaji"]).rename\
-    (columns = {"media.idMal": "idMal", "media.title.english": "english title", "media.title.romaji": "romaji title"})
+    favorites_threshold = input("How far down the favorites list do you wanna go?")
+    stripped_user_df = user_df.get(["media.title.english", "media.title.romaji"]).rename\
+    (columns = {"media.title.english": "english title", "media.title.romaji": "romaji title"})
+    character_list_df = stripped_user_df.assign(characterList)
 
     character_guess(stripped_user_df, 3)
-    """
-    score = 0
 
+    num_rows = stripped_user_df.shape[0]
+    character_list_column = []
+
+    for index in range(num_rows):
+        row = stripped_user_df.iloc[index]
+        titles = (row[0], row[1])
+
+        for title in titles:
+            query= """
+query Query($sort: [CharacterSort], $search: String) {
+Media(search: $search) {
+    characters(sort: $sort) {
+    nodes {
+        name {
+        full
+        }
+    }
+    }
+}
+}
+"""
+        variables = {"search": title, "sort": "FAVOURITES_DESC"}
+        url = 'https://graphql.anilist.co'
+
+        response = requests.post(url, json={'query': query, 'variables': variables})
+        print()
+
+
+        jsonData = response.json()
+
+        # strips json file to only character nodes
+        # also slices character list down to the favorites threshold input
+        character_list = jsonData['data']['Media']['characters']['nodes']
+
+        if len(character_list) >= favorites_threshold:
+
+
+
+        character_list = character_list[0:favorites_threshold]
     
-    user_df = produce_completed_df(username) # takes df only once for efficiency
-    num_questions = int(input("How many questions do you want? "))
-    num_options = int(input("How many options do you want? "))
-
-    for i in range(num_questions):
-        print("")
-        if guess_user_rating(username, user_df, num_options) == True:
-            score += 1
-    
-    print(f'you got {score} out of {num_questions} correct')"""
 
 
-def guess_user_rating_game():
-    score = 0
 
-    username = input("Which user do you want to quiz on? ")
-    user_df = produce_completed_df(username) # takes df only once for efficiency
-    num_questions = int(input("How many questions do you want? "))
-    num_options = int(input("How many options do you want? "))
 
-    for i in range(num_questions):
-        print("")
-        if guess_user_rating(username, user_df, num_options) == True:
-            score += 1
-    
-    print(f'you got {score} out of {num_questions} correct')
-        
 
 
 def guess_user_rating(username, user_df, options):
@@ -179,6 +196,21 @@ def guess_user_rating(username, user_df, options):
         print("Highest scored show:", highest_rated)
         return False
 
+
+def guess_user_rating_game():
+    score = 0
+
+    username = input("Which user do you want to quiz on? ")
+    user_df = produce_completed_df(username) # takes df only once for efficiency
+    num_questions = int(input("How many questions do you want? "))
+    num_options = int(input("How many options do you want? "))
+
+    for i in range(num_questions):
+        print("")
+        if guess_user_rating(username, user_df, num_options) == True:
+            score += 1
+    
+    print(f'you got {score} out of {num_questions} correct')
 
 
 def produce_completed_df(username):

@@ -5,6 +5,7 @@ Which game do you want to play?
 
 1: Guess the user rating!
 2: Character guessing game
+3: Loop testing on character guessing game
 
 """
 pick_game_response = input(pick_game_prompt)
@@ -21,7 +22,8 @@ elif pick_game_response == '3':
     for i in range(100):
         try:
             character_guess(stripped_user_df, 3)
-        except Exception as e: print(e)
+        except: 
+            break
 
 else:
     print("Invalid response.")
