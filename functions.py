@@ -100,53 +100,67 @@ query Query($sort: [CharacterSort], $search: String) {
 # Function for the character guessing game
 def character_guess_game(): # which database, number options
     username = input("Which user do you want to quiz on? ")
+    score_threshold = input("What do you want the minimum show rating to be?")
+    favorites_threshold = int(input("How far down the favorites list do you wanna go?"))
     user_df = produce_completed_df(username)
-    favorites_threshold = input("How far down the favorites list do you wanna go?")
-    stripped_user_df = user_df.get(["media.title.english", "media.title.romaji"]).rename\
-    (columns = {"media.title.english": "english title", "media.title.romaji": "romaji title"})
-    character_list_df = stripped_user_df.assign(characterList)
+    user_df_filtered = user_df[user_df.get('score') >= score_threshold]
 
-    character_guess(stripped_user_df, 3)
+    if user_df_filtered.shape[0] >= 90:
+        raise ValueError("Must use less than 90 shows")
+
+    stripped_user_df = user_df_filtered.get(["media.title.english", "media.idMal"])\
+        .rename(columns = {"media.title.english": "title_eng", "media.idMal": "id_MAL"})
 
     num_rows = stripped_user_df.shape[0]
     character_list_column = []
 
-    for index in range(num_rows):
-        row = stripped_user_df.iloc[index]
-        titles = (row[0], row[1])
+    for title in range(num_rows):
+        row = stripped_user_df.iloc[title]
+        id_MAL = int(row[1])
 
-        for title in titles:
-            query= """
-query Query($sort: [CharacterSort], $search: String) {
-Media(search: $search) {
-    characters(sort: $sort) {
+        query= """
+query Query($idMal: Int, $type: MediaType, $sort: [CharacterSort]) {
+Media(idMal: $idMal, type: $type) {
+title {
+    english
+    romaji
+}
+characters(sort: $sort) {
     nodes {
-        name {
+    name {
         full
-        }
     }
     }
+}
 }
 }
 """
-        variables = {"search": title, "sort": "FAVOURITES_DESC"}
+        variables = {"idMal": id_MAL, "type": "ANIME", "sort": "FAVOURITES_DESC"}
         url = 'https://graphql.anilist.co'
 
         response = requests.post(url, json={'query': query, 'variables': variables})
-        print()
-
-
-        jsonData = response.json()
+        try:
+            jsonData = response.json()
+        except Exception as e:
+            print(f"title: {row[0]}, error: {e}")
+            print(f"response: {response}")
+            print(f"json: {jsonData}")
 
         # strips json file to only character nodes
-        # also slices character list down to the favorites threshold input
-        character_list = jsonData['data']['Media']['characters']['nodes']
+        try:
+            character_list = jsonData['data']['Media']['characters']['nodes']
+        except:
+            print(f"title: {title}")
+            print(f"json: {jsonData}")
 
         if len(character_list) >= favorites_threshold:
-
-
-
-        character_list = character_list[0:favorites_threshold]
+            threshold_characters = []
+            for character in range(favorites_threshold):
+                name_only = character_list[character]['name']['full']
+                threshold_characters.append(name_only)
+            character_list_column.append(threshold_characters)
+    print(f"expected_rows: {num_rows}")
+    return character_list_column
     
 
 
