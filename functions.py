@@ -2,6 +2,7 @@ import random
 import numpy as np
 import pandas
 import requests
+import sys
 
 # Function for the character guessing mechanics
 def character_guess(filtered_df, num_options, favorites_threshold = 2):
@@ -100,8 +101,9 @@ query Query($sort: [CharacterSort], $search: String) {
 # Function for the character guessing game
 def character_guess_game(): # which database, number options
     username = input("Which user do you want to quiz on? ")
-    score_threshold = input("What do you want the minimum show rating to be?")
-    favorites_threshold = int(input("How far down the favorites list do you wanna go?"))
+    score_threshold = int(input("What do you want the minimum show rating to be? "))
+    if score_threshold > 10: sys.exit("Choose a better number bozo ")
+    favorites_threshold = int(input("How far down the favorites list do you wanna go? "))
     user_df = produce_completed_df(username)
     user_df_filtered = user_df[user_df.get('score') >= score_threshold]
 
@@ -160,6 +162,7 @@ characters(sort: $sort) {
                 threshold_characters.append(name_only)
             character_list_column.append(threshold_characters)
     print(f"expected_rows: {num_rows}")
+    print(character_list_column)
     return character_list_column
     
 
