@@ -1,6 +1,6 @@
 import random
 import numpy as np
-import pandas
+import pandas as pd
 import requests
 import sys
 
@@ -162,8 +162,11 @@ characters(sort: $sort) {
                 threshold_characters.append(name_only)
             character_list_column.append(threshold_characters)
     print(f"expected_rows: {num_rows}")
-    print(character_list_column)
-    return character_list_column
+    #print(character_list_column)
+    character_list_series = pd.Series(character_list_column)
+    print(character_list_series)
+    final_df = stripped_user_df.reset_index().assign(characters = character_list_series)
+    print(final_df)
     
 
 
