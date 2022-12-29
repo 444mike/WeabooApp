@@ -6,8 +6,16 @@
     <title>Document</title>
 </head>
 <body>
+    <div class="hero">
+        <video autoplay loop muted plays-inline class="back-video">
+            <source src="video.mp4" type="video.mp4">
+        </video>
+    </div>
     <h1>DAB</h1>
     <p>hopefully this looks cooler in the future when i know how to do more stuff but this is what we rockin with rn lol</p>
     <p>your moms a hoe</p>
+    {% for x in content %}
+             <p>{{x}}</p>
+        {% endfor %}
 </body>
 </html>

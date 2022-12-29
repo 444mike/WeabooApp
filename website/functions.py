@@ -276,10 +276,10 @@ MediaListCollection(userName: $username, type: $type) {
     return scored_only
 
 def write_df():
-    username = input("Whose dataframe do you want? ")
+    #username = input("Whose dataframe do you want? ")
+    username = "444mike"
     dataframe = produce_completed_df(username)
-    """dataframe = dataframe.to_string()
-    with open("dataframe.txt", "w") as f:
-        f.write(dataframe)
-    return dataframe"""
-    print(dataframe)
+    # dataframe = dataframe.to_string()
+    """with open("dataframe.txt", "w") as f:
+        f.write(dataframe)"""
+    return dataframe
