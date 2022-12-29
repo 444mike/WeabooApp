@@ -5,7 +5,7 @@ import requests
 import sys
 
 # Function for the character guessing mechanics
-def character_guess(filtered_df, num_options, favorites_threshold = 2):
+def character_guess(filtered_df, num_options, favorites_threshold = 3):
     """
     Outputs a question in which the user determines which listed character 
     belongs to a randomly selected show.
@@ -24,63 +24,20 @@ def character_guess(filtered_df, num_options, favorites_threshold = 2):
     random_indices = np.random.randint(df_rows, size = num_options)
 
     shows = []
-    for index in random_indices:
-        show = dict(filtered_df.iloc[index]) # converts selected row to dictionary
-        shows.append(show)
-
-    
-    # pulls a highly-favorited character from each show as an answer option
     characters = []
-    for show in shows:
-        # GraphQL query to pull each character
-        query= """
-query Query($sort: [CharacterSort], $search: String) {
-  Media(search: $search) {
-    characters(sort: $sort) {
-      nodes {
-        name {
-          full
-        }
-      }
-    }
-  }
-}
-"""
-        variables = {"search": show["romaji title"], "sort": "FAVOURITES_DESC"}
-        url = 'https://graphql.anilist.co'
-
-        response = requests.post(url, json={'query': query, 'variables': variables})
-        print()
-
-
-        jsonData = response.json()
-
-        # strips json file to only character nodes
-        character_list = jsonData['data']['Media']['characters']['nodes']
-        
-        show_characters = []
-        if len(character_list) == 0:
-            variables = {"search": show["english title"], "sort": "FAVOURITES_DESC"}
-            response = requests.post(url, json={'query': query, 'variables': variables})
-
-            jsonData = response.json()
-
-            # strips json file to only character nodes
-            character_list = jsonData['data']['Media']['characters']['nodes']
-
-        print()
-        print(show["romaji title"], character_list, '\n"')
-        for i in range(favorites_threshold):
-            show_characters.append(character_list[i]['name']['full'])
-        
-        selected_character = show_characters[np.random.randint(favorites_threshold)]
-        characters.append(selected_character)
-
+    for index in random_indices:
+        row = filtered_df.iloc[index]
+        show = row.get('title_eng')
+        character = row.get('characters')[np.random.randint(favorites_threshold)]
+        shows.append(show)
+        characters.append(character)
+    
     # selects a random show as the correct answer
     selected_show_index = np.random.randint(num_options)
-    selected_show = shows[selected_show_index]
+    selected_show_title = shows[selected_show_index]
+    selected_show_character = characters[selected_show_index]
 
-    prompt = f"Which of these {num_options} characters is from {selected_show['english title']}?\n"
+    prompt = f"Which of these {num_options} characters is from {selected_show_title}?\n"
     option_number = 1
 
     for character in characters:
@@ -88,19 +45,21 @@ query Query($sort: [CharacterSort], $search: String) {
         option_number += 1
     prompt += '\n'
 
-    response = 1 # int(input(prompt))
+    response = int(input(prompt))
 
     if response == selected_show_index + 1:
         print("pog")
         return True
     else:
         print("pepesadge")
-        print("Correct answer:", characters[selected_show_index])
+        print("Correct answer:", selected_show_character)
         return False
 
 # Function for the character guessing game
 def character_guess_game(): # which database, number options
     username = input("Which user do you want to quiz on? ")
+    num_questions = int(input("How many questions do you want?" ))
+    num_options = int(input("How many options do you want?" ))
     score_threshold = int(input("What do you want the minimum show rating to be? "))
     if score_threshold > 10: sys.exit("Choose a better number bozo ")
     favorites_threshold = int(input("How far down the favorites list do you wanna go? "))
@@ -161,12 +120,25 @@ characters(sort: $sort) {
                 name_only = character_list[character]['name']['full']
                 threshold_characters.append(name_only)
             character_list_column.append(threshold_characters)
-    print(f"expected_rows: {num_rows}")
+    #print(f"expected_rows: {num_rows}")
     #print(character_list_column)
     character_list_series = pd.Series(character_list_column)
-    print(character_list_series)
+    #print(character_list_series)
     final_df = stripped_user_df.reset_index().assign(characters = character_list_series)
-    print(final_df)
+    #print(final_df)
+
+    score = 0
+
+    for i in range(num_questions):
+        if character_guess(final_df, num_options, favorites_threshold = favorites_threshold) == True:
+            score += 1
+    
+    print(f"You got {score} out of {num_questions} right!")
+
+        
+
+
+    
     
 
 
