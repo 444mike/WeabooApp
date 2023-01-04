@@ -24,21 +24,26 @@ def character_guess(filtered_df, num_options, favorites_threshold):
     df_rows = filtered_df.shape[0]
     random_indices = np.random.randint(df_rows, size = num_options)
 
-    shows = []
+    titles = []
     characters = []
     for index in random_indices:
         row = filtered_df.iloc[index]
-        show = row.get('title_eng')
+        title = row.get('title_eng')
+
+        # adjusts favorites threshold if not enough characters available
+        num_characters = len(row.get('characters'))
+        if num_characters < favorites_threshold:
+            favorites_threshold = num_characters
         try:
             character = row.get('characters')[np.random.randint(favorites_threshold)]
         except:
             print(row, row.get("characters"))
-        shows.append(show)
+        titles.append(title)
         characters.append(character)
     
     # selects a random show as the correct answer
     selected_show_index = np.random.randint(num_options)
-    selected_show_title = shows[selected_show_index]
+    selected_show_title = titles[selected_show_index]
     selected_show_character = characters[selected_show_index]
 
     prompt = f"Which of these {num_options} characters is from {selected_show_title}?\n"
@@ -57,6 +62,7 @@ def character_guess(filtered_df, num_options, favorites_threshold):
     else:
         print("pepesadge")
         print("Correct answer:", selected_show_character)
+        print(titles, characters)
         print()
         return False
 
@@ -65,7 +71,7 @@ def character_guess_game(): # which database, number options
     username = input("Which user do you want to quiz on? ")
     num_questions = int(input("How many questions do you want? "))
     num_options = int(input("How many options do you want? "))
-    score_threshold = int(input("What do you want the minimum show rating to be? "))
+    score_threshold = float(input("What do you want the minimum show rating to be? "))
     if score_threshold > 10: sys.exit("Choose a better number bozo ")
     favorites_threshold = int(input("How far down the favorites list do you wanna go? "))
     user_df = produce_completed_df(username)
@@ -75,14 +81,15 @@ def character_guess_game(): # which database, number options
         raise ValueError("Must use less than 90 shows")
 
     stripped_user_df = user_df_filtered.get(["media.title.english", "media.idMal"])\
-        .rename(columns = {"media.title.english": "title_eng", "media.idMal": "id_MAL"})
+        .rename(columns = {"media.title.english": "title_eng", "media.idMal": "id_MAL"})\
+        .reset_index().drop(columns = 'index')
 
     num_rows = stripped_user_df.shape[0]
     character_list_column = []
 
     for title in range(num_rows):
         row = stripped_user_df.iloc[title]
-        id_MAL = int(row[1])
+        id_MAL = int(row.get('id_MAL'))
 
         query= """
 query Query($idMal: Int, $type: MediaType, $sort: [CharacterSort]) {
@@ -125,11 +132,14 @@ characters(sort: $sort) {
                 name_only = character_list[character]['name']['full']
                 threshold_characters.append(name_only)
             character_list_column.append(threshold_characters)
+        else:
+            stripped_user_df.drop()
     #print(f"expected_rows: {num_rows}")
     #print(character_list_column)
     character_list_series = pd.Series(character_list_column)
     #print(character_list_series)
-    final_df = stripped_user_df.reset_index().assign(characters = character_list_series)
+    final_df = stripped_user_df.reset_index().assign(characters = character_list_series)\
+                               .drop(columns = 'index')
     #print(final_df)
 
     score = 0
