@@ -278,8 +278,6 @@ MediaListCollection(userName: $username, type: $type) {
 def write_df():
     username = input("Whose dataframe do you want? ")
     dataframe = produce_completed_df(username)
-    """dataframe = dataframe.to_string()
+    dataframe = dataframe.to_string()
     with open("dataframe.txt", "w") as f:
         f.write(dataframe)
-    return dataframe"""
-    print(dataframe)

@@ -1,21 +1,39 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <div class="hero">
-        <video autoplay loop muted plays-inline class="back-video">
-            <source src="video.mp4" type="video.mp4">
-        </video>
-    </div>
-    <h1>DAB</h1>
-    <p>hopefully this looks cooler in the future when i know how to do more stuff but this is what we rockin with rn lol</p>
-    <p>your moms a hoe</p>
-    {% for x in content %}
-             <p>{{x}}</p>
-        {% endfor %}
-</body>
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}">
+  </head>
+  <body>
+    <video autoplay loop muted plays-inline class="back-video">
+      <source src={{ url_for('static', filename="lakeVideo.mp4") }} type="video/mp4">
+    </video>
+    <form action="#" method="POST">
+      <div>
+        <label for="game">Which game?</label>
+        <input type="text" name="game" id="game" value="character guess" required>
+      </div>
+      <div>
+        <label for="username">Whose list?</label>
+        <input type="text" name="username" id="username" value="444mike" required>
+      </div>
+      <div>
+        <label for="questions">How many questions?</label>
+        <input type="number" name="questions" id="questions" value="4" min="0" max="20">
+      </div>
+      <div>
+        <label for="options">How many options?</label>
+        <input type="number" name="options" id="options" value="4" min="0" max="10">
+      </div>
+      <div>
+        <label for="favorites">How far down favorites list?</label>
+        <input type="number" name="favorites_depth" id="favorites" value="5" min="0" max="20">
+      </div>
+      <div>
+        <label for="minimum">Minimum show rating?</label>
+        <input type="number" name="minimum_show_rating" id="minimum" value="7" min="0" max="10">
+      </div>
+      <button type="submit">Submit</button>
+      <button type="reset">Reset</button>
+    </form>
+  </body>
 </html>
