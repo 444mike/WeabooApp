@@ -20,18 +20,26 @@ def index():
     else:
         return render_template("index.html")
     
-@app.route("/game")
+@app.route("/game", methods=["POST", "GET"])
 def game():
-    game = user_inputs[0]
-    username = user_inputs[1]
-    questions = int(user_inputs[2])
-    options = int(user_inputs[3])
-    favorites_depth = int(user_inputs[4])
-    minimum_score = int(user_inputs[5])
-    shows = ["steins gate", "promised neverland", "your moms house"]
-    characters = ["mai", "michael", "nick", "gavin", "bene", "tavi", "wes"]
-    #character_guess_game(username, questions, options, favorites_depth, minimum_score)
-    return render_template("game.html", questions=questions, options=options, shows=shows, characters=characters)
+    if request.method == "POST":
+        return redirect(url_for("results"))
+        
+    else:
+        game = user_inputs[0]
+        username = user_inputs[1]
+        questions = int(user_inputs[2])
+        options = int(user_inputs[3])
+        favorites_depth = int(user_inputs[4])
+        minimum_score = int(user_inputs[5])
+        shows = ["steins gate", "promised neverland", "your moms house"]
+        characters = ["mai", "michael", "nick", "gavin", "bene", "tavi", "wes"]
+        #character_guess_game(username, questions, options, favorites_depth, minimum_score)
+        return render_template("game.html", questions=questions, options=options, shows=shows, characters=characters)
+
+@app.route("/results")
+def results():
+    return render_template("results.html")
 
 if __name__ == "__main__":
     app.run()
