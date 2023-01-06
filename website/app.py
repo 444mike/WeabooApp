@@ -34,7 +34,7 @@ def game():
         
     else:
         shows = ["steins gate", "promised neverland", "your moms house"]
-        characters = ["mai", "michael", "nick", "gavin", "bene", "tavi", "wes"]
+        characters = ["mai", "michael", "nick", "gavin", "bene", "tavi", "wes", "william", "hearthy", "jeanette"]
         #character_guess_game(username, questions, options, favorites_depth, minimum_score)
         return render_template("game.html", questions=questions, options=options, shows=shows, characters=characters)
 

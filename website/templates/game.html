@@ -14,21 +14,21 @@
     <script src="https://code.jquery.com/jquery-3.6.3.min.js" 
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" 
     crossorigin="anonymous"></script>
-    <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">yo whaddup shawty</p>
+    <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">ANIME CHARACTER GUESSING GAME :D</p>
     <p>
-    <form action="#" method="POST">
+    <form action="#" method="POST" class="second-form-div">
         {% for i in range(questions) %}
             <p> ------ </p>
             <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Which of these characters is from {{shows[i]}}</p>
-            <label for="username">Which answer choice?</label>
+            <label for="username" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Which answer choice?</label>
             <input type="text" name="username" id={{i}} placeholder={{i}} class="textbox-size" required>
             {% for i in range(options) %}
                 <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">{{i + 1}}. {{characters[i]}}</p>
             {% endfor %}
         {% endfor %}
     </p>
-    <button type="submit">Submit</button>
-    <button type="reset">Reset</button>
+    <button class="button-21" type="submit">Submit</button>
+    <button class="button-21" type="reset">Reset</button>
     </form>
 </body>
 </html>
