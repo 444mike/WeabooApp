@@ -1,9 +1,22 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 .back-video{
     position: absolute;
     right: 0;
     bottom: 0;
     z-index: -1;
-    opacity: .7;
+    opacity: .95;
+}
+
+.back-image{
+    height: 100vh;
+    width: 100vw;
+    background-size: cover;
+    z-index: -1;
+    position: absolute;
 }
 
 @media (min-aspect-ratio: 16/9){
@@ -18,4 +31,35 @@
         width: auto;
         height: 100%;
     }
+}
+
+.form-div{
+    font-size: 30pt;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-110%, -65%);
+    /*background-image: url('/static/ayaya.png')*/
+}
+
+.textbox-size{
+    height: 25px;
+    width: 200px;
+    font-size: large;
+}
+
+.numberbox-size{
+    height: 20px;
+    width: 30px;
+    font-size: medium;
+}
+
+.header{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -500%);
+    font-family: monospace;
+    font-size: 64px;
+    color: white;
 }

@@ -16,20 +16,22 @@ def index():
 
         global user_inputs
         user_inputs = [game, username, questions, options, favorites_depth, minimum_score]
-        return redirect(url_for("user", usr=username))
+        return redirect(url_for("game"))
     else:
         return render_template("index.html")
     
-@app.route("/<usr>")
-def user(usr):
+@app.route("/game")
+def game():
     game = user_inputs[0]
     username = user_inputs[1]
     questions = int(user_inputs[2])
     options = int(user_inputs[3])
     favorites_depth = int(user_inputs[4])
     minimum_score = int(user_inputs[5])
-    character_guess_game(username, questions, options, favorites_depth, minimum_score)
-    return f"<h1>{user_inputs}</h1>"
+    shows = ["steins gate", "promised neverland", "your moms house"]
+    characters = ["mai", "michael", "nick", "gavin", "bene", "tavi", "wes"]
+    #character_guess_game(username, questions, options, favorites_depth, minimum_score)
+    return render_template("game.html", questions=questions, options=options, shows=shows, characters=characters)
 
 if __name__ == "__main__":
     app.run()
