@@ -12,11 +12,11 @@
 }
 
 .back-image{
-    height: 100vh;
     width: 100vw;
+    height: 100vh;
     background-size: cover;
-    z-index: -1;
     position: absolute;
+    z-index: -1;
 }
 
 @media (min-aspect-ratio: 16/9){

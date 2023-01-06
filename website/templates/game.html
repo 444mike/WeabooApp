@@ -7,13 +7,20 @@
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}">
 </head>
 <body>
-    <img src={{ url_for('static', filename="prettyBackground.jpg") }} type="image/jpg" class="back-image">
-    <p>yo whaddup shawty</p>
+    <video autoplay loop muted plays-inline class="back-video">
+        <source src={{ url_for('static', filename="Piplup.mp4") }} type="video/mp4">
+      </video>
+
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" 
+    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" 
+    crossorigin="anonymous"></script>
+    <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">yo whaddup shawty</p>
     <p>
         {% for i in range(questions) %}
-            <p>Which of these characters is from {{shows[i]}}</p>
+            <p> ------ </p>
+            <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Which of these characters is from {{shows[i]}}</p>
             {% for i in range(options) %}
-                <p>{{characters[i]}}</p>
+                <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">{{i + 1}}. {{characters[i]}}</p>
             {% endfor %}
         {% endfor %}
     </p>
