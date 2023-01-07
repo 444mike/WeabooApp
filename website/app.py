@@ -30,6 +30,11 @@ def index():
 @app.route("/game", methods=["POST", "GET"])
 def game():
     if request.method == "POST":
+        global responses
+        responses = []
+        # for the number of questions there are, add each response, since there's one response per question
+        for i in range(questions):
+            responses += request.form[str(i)]
         return redirect(url_for("results"))
         
     else:
@@ -41,7 +46,7 @@ def game():
 # route for the results page
 @app.route("/results")
 def results():
-    return render_template("results.html")
+    return render_template("results.html", responses=responses)
 
 if __name__ == "__main__":
     app.run()

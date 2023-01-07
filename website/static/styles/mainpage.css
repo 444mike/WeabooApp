@@ -85,6 +85,7 @@
   position: relative;
   text-align: center;
   text-decoration: none;
+  top: 20px;
   transition: background-color .2s,background-position .2s;
   user-select: none;
   -webkit-user-select: none;
@@ -113,5 +114,5 @@
     transform: translate(-50%, -500%);
     font-family: monospace;
     font-size: 64px;
-    color: white;
+    color: rgb(255, 107, 211);
 }

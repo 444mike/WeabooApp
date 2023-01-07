@@ -21,7 +21,7 @@
             <p> ------ </p>
             <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Which of these characters is from {{shows[i]}}</p>
             <label for="username" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">Which answer choice?</label>
-            <input type="text" name="username" id={{i}} placeholder={{i}} class="textbox-size" required>
+            <input type="text" name={{i}} id={{i}} placeholder={{i}} class="textbox-size" required>
             {% for i in range(options) %}
                 <p style="font-family: Verdana, Geneva, Tahoma, sans-serif;">{{i + 1}}. {{characters[i]}}</p>
             {% endfor %}
