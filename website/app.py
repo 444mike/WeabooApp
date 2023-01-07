@@ -32,7 +32,7 @@ def game():
     if request.method == "POST":
         global responses
         responses = []
-        # for the number of questions there are, add each response, since there's one response per question
+        # for the number of questions there are, add each response to a list of responses, since there's one response per question
         for i in range(questions):
             responses += request.form[str(i)]
         return redirect(url_for("results"))
