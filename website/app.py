@@ -7,7 +7,7 @@ app = Flask(__name__, static_folder='static')
 # so in general, app routes are just the directions for what happens at each url.
 # for instance, this first one under here just handles the home page, and the next one under it handles website.com/game
 
-# methods post and get represent how the website is feeding information, post is secure, get is public
+# methods "post" and "get" represent how the website is feeding information, post is secure, get is public
 # whenever the website is loaded originally, it'll use get, whenever a submit button is pressed, it'll use post,
 # and then you can follow the different if statements based on those two scenarios
 
@@ -37,10 +37,10 @@ def game():
             responses += request.form[str(i)]
         return redirect(url_for("results"))
         
-    else:
-        shows = ["steins gate", "promised neverland", "your moms house"]
-        characters = ["mai", "michael", "nick", "gavin", "bene", "tavi", "wes", "william", "hearthy", "jeanette"]
-        #character_guess_game(username, questions, options, favorites_depth, minimum_score)
+    else: # request.method == "GET"
+        shows = character_guess_game(username, questions, options, minimum_score, favorites_depth)[0]
+        print(shows)
+        characters = character_guess_game(username, questions, options, minimum_score, favorites_depth)[1]        
         return render_template("game.html", questions=questions, options=options, shows=shows, characters=characters)
 
 # route for the results page
