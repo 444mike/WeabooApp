@@ -57,20 +57,23 @@ def character_guess(filtered_df, num_options, favorites_threshold):
     prompt += '\n'
 
     # commented this part out because i didnt want the response input -michael
-    """response = int(input(prompt))
+    response = 1
+    #response = int(input(prompt))
 
     if response == selected_show_index + 1:
         print("pog\n")
-        return True
+        #return True
     else:
-        print("pepesadge")
+        """
         print("Correct answer:", selected_show_character)
-        print(titles, characters)
+        print("selected show title: ", selected_show_title)
+        print("titles: ", titles)
+        print("characters: ", characters)
         print()
-        return False"""
+        #return False
+        """
 
-    #print("check in character_guess", selected_show_title)
-    return selected_show_title, characters
+    return selected_show_title, characters, (selected_show_index + 1)
 
 # Function for the character guessing game
 def character_guess_game(username, num_questions, num_options, score_threshold, favorites_threshold): # which database, number options
@@ -159,21 +162,24 @@ characters(sort: $sort) {
     # this section is michael doing some unholy shit trying to piece this shit together
     titles = []
     characters = []
+    correct_answers = []
 
     for i in range(num_questions):
-        check = [character_guess(final_df, num_options, favorites_threshold)[0]]
-        titles += check
-        print("check", check)
-        characters_placeholder = character_guess(final_df, num_options, favorites_threshold)[1]
-        characters.append(characters_placeholder)
-        if character_guess(final_df, num_options, favorites_threshold) == True:
-            score += 1
+        return_tuple = character_guess(final_df, num_options, favorites_threshold)
+        titles += [return_tuple[0]]
+        characters.append(return_tuple[1])
+        correct_answers += [return_tuple[2]]
+        """if character_guess(final_df, num_options, favorites_threshold) == True:
+            score += 1"""
     
+    """
     print(f"You got {score} out of {num_questions} right!")
-
-    #print("check in character_guess_game", titles)
-    #print(characters)
-    return titles, characters
+    print("check in character_guess_game")
+    print("titles:", titles)
+    print("characters:", characters)
+    print("correct answer:", correct_answers)
+    """
+    return titles, characters, correct_answers
 
         
 
@@ -316,3 +322,10 @@ def write_df():
     dataframe = dataframe.to_string()
     with open("dataframe.txt", "w") as f:
         f.write(dataframe)
+
+def check_score(correct_characters, answers, questions):
+    score = 0
+    for i in range(questions):
+        if int(correct_characters[i]) == int(answers[i]):
+            score += 1
+    return score

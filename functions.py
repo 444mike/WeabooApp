@@ -62,7 +62,9 @@ def character_guess(filtered_df, num_options, favorites_threshold):
     else:
         print("pepesadge")
         print("Correct answer:", selected_show_character)
-        print(titles, characters)
+        print("selected show title: ", selected_show_title)
+        print("titles: ", titles)
+        print("characters: ", characters)
         print()
         return False
 

@@ -38,15 +38,18 @@ def game():
         return redirect(url_for("results"))
         
     else: # request.method == "GET"
-        shows = character_guess_game(username, questions, options, minimum_score, favorites_depth)[0]
-        print(shows)
-        characters = character_guess_game(username, questions, options, minimum_score, favorites_depth)[1]        
-        return render_template("game.html", questions=questions, options=options, shows=shows, characters=characters)
+        global correct_answers
+        shows_characters_tuple = character_guess_game(username, questions, options, minimum_score, favorites_depth)
+        shows = shows_characters_tuple[0]
+        characters = shows_characters_tuple[1]
+        correct_answers = shows_characters_tuple[2]
+        return render_template("game.html", questions=questions, options=options, shows=shows, characters=characters, correct_answers=correct_answers)
 
 # route for the results page
 @app.route("/results")
 def results():
-    return render_template("results.html", responses=responses)
+    score = check_score(correct_answers, responses, questions)
+    return render_template("results.html", responses=responses, score=score, questions=questions)
 
 if __name__ == "__main__":
     app.run()
